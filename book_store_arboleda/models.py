@@ -48,3 +48,6 @@ class Wishlist:
 
 class Discount:
     pass
+
+class Rating:
+    pass
