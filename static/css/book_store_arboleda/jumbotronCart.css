@@ -1,0 +1,81 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.jumbotron {
+  background-color: #e9ecef;
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  border-radius: 3rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+table, th, td {
+  
+  border: 1px solid;
+  padding: 10px;
+}
+
+
+table {
+  border: 2px solid;
+  margin: 5px;
+}
+
+.message {
+  margin: 10px;
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.message.hidden {
+  opacity: 0;
+}
+
+.success {
+  background-color: #dff0d8;
+  color: #3c763d;
+  border: 1px solid #80ef26;
+  padding: 15px;
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.success .alertClose {
+  float: right;
+  cursor: pointer;
+}
+
+.success .alertText {
+  margin-bottom: 0;
+}
+
+.alertCheckbox {
+  display: none;
+}
+
+:checked + .alert {
+  display: none;
+}
+
+.alertText {
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 16px;
+}
+
+.alertClose {
+  float: right;
+  padding-top: 5px;
+  font-size: 10px;
+}
+
+.clear {
+  clear: both;
+}
+

@@ -1,0 +1,32 @@
+{% extends "book_store_arboleda/base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/jumbotronAddbook.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <div class="title">
+            <h2>Add Book</h2>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="" >
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="center-button">
+                <input class="button" type="submit" value="Add book">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

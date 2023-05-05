@@ -1,0 +1,46 @@
+{% extends "book_store_arboleda/base.html" %}
+{% load widget_tweaks %}
+{% load static%}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/registration.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+    <div class="title">
+      <h2>Create User</h2>
+    </div>
+    <form id="user-form" method="POST" action="">
+      {% csrf_token %}
+      <div class="form-control">
+        {{ form.username|attr:"placeholder:User Name"|add_class:"form-control" |attr:"required:true"}}
+        {{ form.first_name|attr:"placeholder:First Name"|add_class:"form-control"|attr:"required:true" }}
+        {{ form.last_name|attr:"placeholder:Last Name"|add_class:"form-control"|attr:"required:true" }}
+        {{ form.email|attr:"placeholder:Email"|add_class:"form-control"|attr:"required:true" }}
+        {{ form.password1|attr:"placeholder:Password"|add_class:"form-control"|attr:"required:true" }}
+        {{ form.password2|attr:"placeholder:Re-enter Password"|add_class:"form-control"|attr:"required:true" }}
+        {{ form.errors }}
+      </div>
+    </form>
+    <div class="burronCenter">
+      <button class="button" type="button" onclick="submitForms()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function submitForms() {
+  document.getElementById("user-form").submit();
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
