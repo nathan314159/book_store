@@ -37,9 +37,6 @@ class Review:
 class Category:
     pass
 
-class Publisher:
-    pass
-
 class Author:
     pass
 
