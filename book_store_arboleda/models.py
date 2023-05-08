@@ -26,19 +26,25 @@ def update_book_count(sender, instance, action, **kwargs):
 m2m_changed.connect(update_book_count, sender=Cart.books.through)
 
 class Order:
-   pass
-
+   cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
+   date = models.DateField()
+   
 class Payment:
-    pass
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    date = models.DateField()
     
-class Review:
-    pass
 
-class Category:
-    pass
 
 class Author:
-    pass
+    name = models.CharField(max_length=20,null=True)
+    last_name = models.CharField(max_length=20,null=True)
+    born = models.DateField()
+    death = models.DateField(null=True, blank=True)
+    books = models.ManyToManyField('Book')
 
 class Wishlist:
     pass
@@ -47,4 +53,10 @@ class Discount:
     pass
 
 class Rating:
+    pass
+
+class Review:
+    pass
+
+class Category:
     pass
