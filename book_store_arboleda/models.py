@@ -17,7 +17,7 @@ class Cart(models.Model):
     books=models.ManyToManyField(Book)
     book_count = models.PositiveIntegerField(default=0)
     def __str__(self):
-        return str(self.customer)
+        return str(self.user)
 
 def update_book_count(sender, instance, action, **kwargs):
     if action == 'post_add' or action == 'post_remove':
@@ -25,26 +25,27 @@ def update_book_count(sender, instance, action, **kwargs):
         instance.save()
 m2m_changed.connect(update_book_count, sender=Cart.books.through)
 
-class Order:
-   cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-   user = models.ForeignKey(User, on_delete=models.CASCADE)
-   date = models.DateField()
-   
-class Payment:
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+class Order(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    date = models.DateField()
+    total = models.DecimalField(max_digits=8, decimal_places=2)
+   
+class Payment(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date = models.DateField()
+    payment_method = models.CharField(max_length=50)
     
 
-
-class Author:
+class Author(models.Model):
     name = models.CharField(max_length=20,null=True)
     last_name = models.CharField(max_length=20,null=True)
     born = models.DateField()
     death = models.DateField(null=True, blank=True)
     books = models.ManyToManyField('Book')
+
 
 class Wishlist:
     pass

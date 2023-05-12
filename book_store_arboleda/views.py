@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from .forms import *
 from .models import *
 from django.contrib.auth import login,logout,authenticate
@@ -60,8 +60,6 @@ def registerPage(request):
     return render(request, 'book_store_arboleda/register.html', context)
 
 
-
-    
 def addbook(request):
     form=Createbookform()
     if request.method=='POST':
@@ -75,14 +73,21 @@ def addbook(request):
 
 
 
+
+
 @login_required
 def viewcart(request):
+    print("request URL --->",request.get_full_path())
+    print("request --->",request)
+    
     carts = Cart.objects.filter(user=request.user)
+    print("viewcart carts --->",carts)
+
+
+    
     context = {'carts': carts}
+    print("viewcart context --->",context)
     return render(request, 'book_store_arboleda/viewcart.html', context)
-
-
-
 
 @login_required
 def addtocart(request, pk):
@@ -124,3 +129,53 @@ def updateBook(request, pk):
     return render(request, 'book_store_arboleda/updateBook.html', {'form': form})
 
 
+# @login_required
+# def payment(request, payment_id):
+#     print('payment_id ---->', payment_id)
+#     try: 
+#         payment = Payment.objects.get(pk=payment_id)
+        
+#     except Payment.DoesNotExist:
+#         return HttpResponseNotFound("Invalid payment ID")
+
+#     cart = payment.cart
+
+#     if cart:
+#         books = cart.books.all()
+#         print("Books in cart:", books)
+#         total_amount = sum(book.Price for book in books)
+#     else:
+#         books = []
+#         total_amount = 0
+#         print("No books in cart")
+
+#     print("------Total amount:", total_amount)
+#     print("------Books in cart:", books)
+#     print("------Payment object:", payment)
+
+#     if request.method == 'POST':
+#         form = PaymentForm(request.POST, instance=payment)
+#         if form.is_valid():
+#             payment = form.save(commit=False)
+#             payment.total_amount = total_amount  # set the total amount
+#             payment.save()
+#             return redirect('/', id=payment.pk)
+        
+#     else:
+#         form = PaymentForm(instance=payment)
+        
+#     context = {'total_amount': total_amount, 'books': books, 'payment':payment}
+#     return render(request, 'book_store_arboleda/payment.html', context)
+
+    
+
+
+
+
+@login_required
+def payment(request, payment_id):
+    print(request.build_absolute_uri())
+    print('payment_id ---->', payment_id)    
+
+    context = {'payment_id':payment_id}
+    return render(request, 'book_store_arboleda/payment.html', context)

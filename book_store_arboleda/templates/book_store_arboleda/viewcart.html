@@ -47,11 +47,17 @@
                             <td>{{book.Price}} </td>
                             <td>{{book.Edition}} </td>
 
-                            <td><a class="btn btn-sm btn-info" href="{% url 'removeBookCustomer' book.id %}">Remove</a> </td>
+                            <td><a href="{% url 'removeBookCustomer' book.id %}">Remove</a> </td>
                         </td>
                         </tr>
                         {% endfor %}
                     </table>
+                    <form action="{% url 'payment' payment_id=carts.first.id %}" method="get">
+                        <input type="hidden" name="total_amount" value="{{ payment.total_amount }}">
+                        <button type="submit" class="button">Pay Now</button>
+                    </form>
+                      
+                    </form>                    
                 </div>
             {% endfor %}
         {% else %}

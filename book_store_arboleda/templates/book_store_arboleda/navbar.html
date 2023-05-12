@@ -23,7 +23,13 @@
       {% if request.user.is_staff %}
       <li><a class="nav-link" href="{% url 'addbook' %}">Add Books</a></li>
       {% else %}
-      <li><a class="nav-link" href="{% url 'viewcart' %}">Cart</a></li>
+      
+
+      <a class="nav-link" href="{% url 'viewcart' %}">Cart</a>
+  
+
+    
+
       {% endif %}
       <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
     
