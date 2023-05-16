@@ -9,55 +9,36 @@
     {% load static %}
     {% block css %}
 
-    <link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/jumbotronHome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/home1.css' %}">
     {% endblock %}
-
-    <script src="{% static 'js/book_store_arboleda/navbar_dynamics.js' %}"></script>
 </head>
 
 {% block content %}
- 
-<br>
- 
-<div class="container">
-    <div class="jumbotron">
-        <div class="col-lg-10">
-            <h3>Books Available:</h3>
-            <div class="card card-body">
-                <table class="table-table-sm">
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Price</th>
-                        <th>Edition</th>
-                        {% if user.is_authenticated %}
-                        <th>Option</th>
-                        {% endif %}
-                        
-                    </tr>
-                    {% for book in books %}
-                    <tr>
-                        <td><b>{{book.title}}</b> </td>
-                        <td>{{book.Author}} </td>
-                        <td>{{book.Price}} </td>
-                        <td> {{book.Edition}} </td>
-                        {% if user.is_authenticated and not user.is_staff%}
-                        <td><a class="btn btn-sm btn-info" href="{% url 'addtocart' book.id %}">Add to cart</a> </td>
-                        
-                        {% endif %}
-                        {% if user.is_staff %}
-                        <td><a class="btn btn-sm btn-info" href="{% url 'updateBook' book.id %}">Update</a> </td>
-                        <td><a class="btn btn-sm btn-info" href="{% url 'deleteBook' book.id %}">Delete</a> </td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </div>
-    </div> 
-</div>
- 
-{% endblock %}
+  
 
+
+<div class="card-father">
+    <ul>
+        {% for book in books %}
+        <li>
+            <div class="card">
+                <div class="center-book-img">
+                    <img src="{% static 'images/'|add:book.title|add:'.jpg' %}" alt="{{ book.title }}" class="book-image">
+                </div>
+                <div class="card-body">
+                    <h2 class="book-title">{{ book.title }}</h2>
+                    <p class="book-author">{{ book.author }}</p>
+                    <p class="book-price">${{ book.price }}</p>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="#" class="button">Go somewhere</a>
+</div>
+
+  
+
+{% endblock %}
 </body>
 </html>

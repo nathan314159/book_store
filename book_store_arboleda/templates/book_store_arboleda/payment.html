@@ -1,0 +1,48 @@
+{% extends "book_store_arboleda/base.html" %}
+{% load widget_tweaks %}
+{% load static%}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/paymentInfo.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+        <div class="title">
+            <h2>Recipt of Payment</h2>  
+        </div>
+        <p>Date: {{ payment.date }}</p>
+        <form method="POST" action="{% url 'payment' payment_id=payment_id %}">
+            {% csrf_token %}
+
+            {% if books %}
+            <div class="books-price">
+                <ul>
+                {% for book in books %}
+                <li>
+
+                    <span>{{ book.title }}</span>
+                    <span>{{ book.Price }} $</span>
+
+                </li>
+                {% endfor %}
+                </ul>
+            </div>
+
+            <p>Total amount: {{ total_amount }} $</p>
+
+            {% else %}
+            <p>No books in cart</p>
+            {% endif %}
+
+            <p>Payment method: {{ payment.payment_method }}</p>
+        </form>
+        <div class="burronCenter">
+            <button class="button" type="button" onclick="submitForms()">Pay</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
