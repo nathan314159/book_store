@@ -26,6 +26,7 @@ urlpatterns = [
     path('account/',include('account.urls')),
     path('',include('book_store_arboleda.urls')),
 
+
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

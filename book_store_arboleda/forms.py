@@ -17,7 +17,7 @@ class Createbookform(ModelForm):
 class Createcartform(forms.ModelForm):
     class Meta:
         model = Cart
-        fields = ['customer', 'books']
+        fields = ['user', 'books']
     
     customer = forms.ModelChoiceField(queryset=User.objects.all())
     
@@ -25,7 +25,7 @@ class Createcartform(forms.ModelForm):
 class PaymentForm(ModelForm):
     class Meta:
         model = Payment
-        fields = ['cart', 'amount', 'date', 'payment_method']
+        fields = ['date', 'payment_method']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }

@@ -169,9 +169,6 @@ def updateBook(request, pk):
 
     
 
-
-
-
 @login_required
 def payment(request, payment_id):
     print(request.build_absolute_uri())
@@ -179,3 +176,8 @@ def payment(request, payment_id):
 
     context = {'payment_id':payment_id}
     return render(request, 'book_store_arboleda/payment.html', context)
+
+
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'book_store_arboleda/home.html', {'books': books})
