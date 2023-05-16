@@ -29,7 +29,7 @@
                     <h2 class="book-title">{{ book.title }}</h2>
                     <p class="book-author">{{ book.author }}</p>
                     <p class="book-price">${{ book.price }}</p>
-                    <a href="#" class="button">Add to cart</a>
+                    <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
 
                 </div>
             </div>

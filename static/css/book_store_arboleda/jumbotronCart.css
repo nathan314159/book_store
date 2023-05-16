@@ -3,20 +3,28 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  position: relative;
+
 }
 
 .jumbotron {
   background-color: #e9ecef;
   padding: 2rem 1rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
   border-radius: 3rem;
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+
+  position: absolute; /* Position the jumbotron relative to the container */
+  top: 0; /* Position it at the top of the container */
+  margin: auto; /* Center it horizontally */
+  z-index: 1; /* Ensure the jumbotron appears above other elements */
 }
 
 table, th, td {
   
   border: 1px solid;
   padding: 10px;
+
 }
 
 
@@ -79,3 +87,9 @@ table {
   clear: both;
 }
 
+img {
+  max-width: 100%;
+  max-height: 150px;
+  border-style: solid;
+
+}

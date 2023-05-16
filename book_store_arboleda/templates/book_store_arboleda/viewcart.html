@@ -11,8 +11,6 @@
     <div class="jumbotron">
         <div class="row">
 
-
-
             {% if messages %}
                 {% for message in messages %}
                     <div class="message" role="alert">
@@ -41,11 +39,16 @@
                             <th>Option</th>
                         </tr>
                         {% for book in cart.books.all %}
+
+
+
                         <tr>
                             <td>{{book.title}} </td>
-                            <td>{{book.Author}} </td>
-                            <td>{{book.Price}} </td>
-                            <td>{{book.Edition}} </td>
+                            <td>{{book.author}} </td>
+                            <td>{{book.price}} </td>
+                            <td> <div class="center-book">
+                                <img src="{% static 'images/'|add:book.title|add:'.jpg' %}" alt="{{ book.title }}" class="book-image">
+                            </div> </td>
 
                             <td><a href="{% url 'removeBookCustomer' book.id %}">Remove</a> </td>
                         </td>
