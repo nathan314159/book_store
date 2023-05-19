@@ -1,13 +1,11 @@
 
   .card {
     width: 18rem;
-    height: 35rem;
+    height: 46rem;
     margin-bottom: 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-
-
   }
   
   .card-img-top {
@@ -30,10 +28,10 @@
     padding: 1rem;
   }
 
-  .card-title {
-    margin-bottom: 0.5rem;
-    font-size: 1.25rem;
-    font-weight: 500;
+  .book-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .card-text {

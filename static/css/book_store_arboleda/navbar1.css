@@ -13,13 +13,16 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    font-size: 1.5rem;
   }
 
   li {
     margin: 0 10px;
+
   }
 
   .nav-link {
+    padding-right: 1rem;
     text-decoration: none;
     color: #fff;
   }
@@ -34,10 +37,13 @@
     justify-content: flex-end;
     display: flex;
     align-items: center;
+    font-size: 1.5rem;
   }
 
   .navbar-right span {
     margin-left: 20px;
-    
   }
   
+  .book-count {
+    color: white;
+  }
