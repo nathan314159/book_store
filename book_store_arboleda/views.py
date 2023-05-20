@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.urls import reverse
 from .forms import *
 from .models import *
 from django.contrib.auth import login,logout,authenticate
@@ -9,10 +10,14 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 def home(request):
     books=Book.objects.all()
-    context={'books':books}
+    cart = None
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+    context={'books':books, 'cart':cart}
  
     return render(request,'book_store_arboleda/home.html',context)
     
+
 def logoutPage(request):
     logout(request)
     return redirect('/')
@@ -77,17 +82,16 @@ def addbook(request):
 
 @login_required
 def viewcart(request):
-    print("request URL --->",request.get_full_path())
-    print("request --->",request)
-    
-    carts = Cart.objects.filter(user=request.user)
-    print("viewcart carts --->",carts)
-
-
-    
-    context = {'carts': carts}
-    print("viewcart context --->",context)
-    return render(request, 'book_store_arboleda/viewcart.html', context)
+    user = request.user
+    cart = Cart.objects.get(user=user)
+    cart_id = cart.id
+    if cart.book_count == 0:
+        return redirect('empty_cart_page')
+    else:
+        cart.update_total_amount()
+        context = {'cart': cart, 'cart_id': cart_id}
+        print(context)
+        return render(request, 'book_store_arboleda/viewcart.html', context)
 
 @login_required
 def addtocart(request, pk):
@@ -107,11 +111,17 @@ def deleteBook(request, pk):
 def removeBookFromCart(request, book_id):
     cart = Cart.objects.filter(user=request.user).first()
     book = Book.objects.get(id=book_id)
+    
     cart.books.remove(book)
-    cart.book_count -= 1
-    cart.save()
+    if cart.book_count > 0:
+        cart.book_count -= 1
+        cart.save()
+    else:
+        cart.empty_cart()
+        return redirect('empty_cart_page')
     messages.success(request, 'Book removed from cart successfully!')
     return redirect('viewcart')
+
 
 def removeBookUser(request, pk):
     removeBookFromCart(request, pk)
@@ -129,55 +139,26 @@ def updateBook(request, pk):
     return render(request, 'book_store_arboleda/updateBook.html', {'form': form})
 
 
-# @login_required
-# def payment(request, payment_id):
-#     print('payment_id ---->', payment_id)
-#     try: 
-#         payment = Payment.objects.get(pk=payment_id)
-        
-#     except Payment.DoesNotExist:
-#         return HttpResponseNotFound("Invalid payment ID")
-
-#     cart = payment.cart
-
-#     if cart:
-#         books = cart.books.all()
-#         print("Books in cart:", books)
-#         total_amount = sum(book.Price for book in books)
-#     else:
-#         books = []
-#         total_amount = 0
-#         print("No books in cart")
-
-#     print("------Total amount:", total_amount)
-#     print("------Books in cart:", books)
-#     print("------Payment object:", payment)
-
-#     if request.method == 'POST':
-#         form = PaymentForm(request.POST, instance=payment)
-#         if form.is_valid():
-#             payment = form.save(commit=False)
-#             payment.total_amount = total_amount  # set the total amount
-#             payment.save()
-#             return redirect('/', id=payment.pk)
-        
-#     else:
-#         form = PaymentForm(instance=payment)
-        
-#     context = {'total_amount': total_amount, 'books': books, 'payment':payment}
-#     return render(request, 'book_store_arboleda/payment.html', context)
-
-    
 
 @login_required
-def payment(request, payment_id):
+def payment(request, cart_id):
     print(request.build_absolute_uri())
-    print('payment_id ---->', payment_id)    
+    print('cart_id ---->', cart_id)  
 
-    context = {'payment_id':payment_id}
+    context = {'cart_id':cart_id}
     return render(request, 'book_store_arboleda/payment.html', context)
 
 
 def book_list(request):
     books = Book.objects.all()
     return render(request, 'book_store_arboleda/home.html', {'books': books})
+
+def empty_cart(request):
+    cart = Cart.objects.filter(user=request.user).first()
+    if cart:
+        cart.empty_cart()
+    return redirect('empty_cart_page')
+
+def empty_cart_page(request):
+    return render(request, 'book_store_arboleda/emptycart.html')
+

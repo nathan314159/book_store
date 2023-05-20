@@ -16,35 +16,41 @@
 
 </head>
 <body>
-  {% block content %}
+
+
+{% block content %}
   <nav class="navbar">
     <ul>
-      <li><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+      <li><a class="nav-link" href="{% url 'home' %}"><i class="fa-solid fa-home fa-lg"></i></a></li>
       {% if request.user.is_staff %}
       <li><a class="nav-link" href="{% url 'addbook' %}">Add Books</a></li>
       {% else %}
-      
-
-      <a class="nav-link" href="{% url 'viewcart' %}">Cart</a>
-  
-
-    
-
+        <li><a class="nav-link" href="{% url 'viewcart' %}"><i class="fa-solid fa-bag-shopping"></i></a>
+          {% if request.user.is_authenticated %}
+            {% if cart %}
+              <span class="book-count">({{ cart.book_count }})</span>
+            {% else %}
+              <span class="book-count">(0)</span>
+            {% endif %}
+          {% endif %}
+        </li>
       {% endif %}
       <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-    
     </ul>
 
     <div class="navbar-right">
-      <span class="hello-msg">Hello, {{request.user}}</span>
+      <span class="hello-msg">Hello, {{ request.user }}</span>
       <span><a class="hello-msg" href="{% url 'logout' %}">Logout</a></span>
     </div>
-
   </nav>
+{% endblock %}
 
 
+
+
+  {% block scripts %}
+  <script src="https://kit.fontawesome.com/520a58e117.js" crossorigin="anonymous"></script>
   {% endblock %}
-
 
 </body>
 </html>

@@ -14,7 +14,7 @@
             <h2>Recipt of Payment</h2>  
         </div>
         <p>Date: {{ payment.date }}</p>
-        <form method="POST" action="{% url 'payment' payment_id=payment_id %}">
+        <form method="POST" action="{% url 'payment' cart_id=cart_id %}">
             {% csrf_token %}
 
             {% if books %}

@@ -27,9 +27,26 @@
                 </div>
                 <div class="card-body">
                     <h2 class="book-title">{{ book.title }}</h2>
-                    <p class="book-author">{{ book.author }}</p>
-                    <p class="book-price">${{ book.price }}</p>
-                    <a href="#" class="button">Add to cart</a>
+                    <p class="book-author">Author: {{ book.author }}</p>
+                    <p class="book-price">Price: ${{ book.price }}</p>
+                    <p class="book-stock">In stock: {{ book.copies_in_stock }}</p>
+
+                    {% if book.copies_in_stock > 0 %}
+                        <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> Available</p>
+                    {% else %}
+                        <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> No book available with that Title</p>
+                    {% endif %}
+
+                    {% if user.is_anonymous %}
+                        <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                    {% elif user.is_staff %}
+                        <a href="{% url 'updateBook' pk=book.pk %}" class="button">Update</a>
+                        <a href="{% url 'deleteBook' pk=book.pk %}" class="button">Delete</a>
+                    {% else %}
+                        <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                    
+                    {% endif %}
+
 
                 </div>
             </div>

@@ -11,8 +11,6 @@
     <div class="jumbotron">
         <div class="row">
 
-
-
             {% if messages %}
                 {% for message in messages %}
                     <div class="message" role="alert">
@@ -28,39 +26,49 @@
                 {% endfor %}
             {% endif %}
 
-            {% if carts %}
-            {% for cart in carts %}
-                <h3>Cart {{forloop.counter}}:</h3>
+            {% if cart %}
+
+                <h3>Shopping Cart: {{user.first_name|capfirst}} {{user.last_name|capfirst}}</h3>
                 <div class="card card-body">
                     <table class="table table-sm">
                         <tr>
-                            <th>Title</th>
-                            <th>Author</th>
+                            <th>Book Cover</th>
+                            <th></th>
                             <th>Price</th>
-                            <th>Edition</th>
-                            <th>Option</th>
+                            <th></th>
                         </tr>
                         {% for book in cart.books.all %}
-                        <tr>
-                            <td>{{book.title}} </td>
-                            <td>{{book.Author}} </td>
-                            <td>{{book.Price}} </td>
-                            <td>{{book.Edition}} </td>
 
-                            <td><a href="{% url 'removeBookCustomer' book.id %}">Remove</a> </td>
-                        </td>
+                        <tr>
+                            <td> <div class="center-book">
+                                <img src="{% static 'images/'|add:book.title|add:'.jpg' %}" alt="{{ book.title }}" class="book-image">
+                            </div> </td>
+                            
+                            <td>
+                                <div class="book-info">
+                                    <div class="book-title">Book title: {{ book.title }}</div>
+                                    <div class="book-author">Author: {{ book.author }}</div>
+                                </div>
+                            </td>
+                            <td><div class="book-price">${{ book.price }}</div></td>
+                            <td><a href="{% url 'removeBookCustomer' book.id %}"><i class="fa-regular fa-trash-can fa-xl"></i></a> </td>
                         </tr>
+
                         {% endfor %}
+                        <td></td>
+                            <td>
+                                <a href="{% url 'empty_cart' %}" class="button">Empty Cart</a>
+                                <a href="{% url 'home' %}" class="button" >Continue Shopping</a>
+                            </td>
+                        <td><div class="book-amount">${{ cart.total_amount }}</div></td>
+                        <td><a href="{% url 'payment' cart_id=cart_id %}" class="button">Payment</a></td>
                     </table>
-                    <form action="{% url 'payment' payment_id=carts.first.id %}" method="get">
-                        <input type="hidden" name="total_amount" value="{{ payment.total_amount }}">
-                        <button type="submit" class="button">Pay Now</button>
-                    </form>
+                    
                       
-                    </form>                    
+                              
                 </div>
-            {% endfor %}
-        {% else %}
+
+            {% else %}
             <p>Your cart is empty !!!.</p>
         {% endif %}
         </div>
@@ -70,6 +78,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://kit.fontawesome.com/520a58e117.js" crossorigin="anonymous"></script>
 {{ block.super }}
 <script src="{% static 'js/book_store/book_store_arboleda/viewcart.js' %}"></script>
 {% endblock %}

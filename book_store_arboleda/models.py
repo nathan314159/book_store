@@ -29,8 +29,13 @@ class Book(models.Model):
             self.save()
         else:
             raise ValueError("Cannot remove more copies than in stock.")
-    
-            
+
+    def decrease_stock(self, num_copies):
+        if self.copies_in_stock >= num_copies:
+            self.copies_in_stock -= num_copies
+            self.save()
+        else:
+            raise ValueError("Not enough copies in stock.")        
 
  
 class Cart(models.Model): 
