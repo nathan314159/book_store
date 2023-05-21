@@ -142,10 +142,22 @@ def updateBook(request, pk):
 
 @login_required
 def payment(request, cart_id):
-    print(request.build_absolute_uri())
-    print('cart_id ---->', cart_id)  
+        # Retrieve payment information
+    payment = Payment.objects.filter(user=request.user).first()
 
-    context = {'cart_id':cart_id}
+    # Retrieve books in the cart
+    books = Book.objects.filter(cart_id=cart_id)
+
+    # Calculate the total amount
+    total_amount = sum(book.price for book in books)
+
+    # Prepare the context data
+    context = {
+        'cart_id': cart_id,
+        'payment': payment,  # Pass the payment object to the template
+        'books': books,  # Pass the books in the cart to the template
+        'total_amount': total_amount,  # Pass the total amount to the template
+    }
     return render(request, 'book_store_arboleda/payment.html', context)
 
 
