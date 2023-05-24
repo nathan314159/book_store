@@ -29,3 +29,11 @@ class PaymentForm(ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+        
+class InvoiceForm(ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['date','status_revision']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }

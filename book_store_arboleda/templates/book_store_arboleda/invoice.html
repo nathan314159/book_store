@@ -1,0 +1,36 @@
+{% extends "book_store_arboleda/base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/paymentInfo.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h1>Invoice</h1>
+<h2>Payment ID: {{ payment_id }}</h2>
+<h3>User: {{ user.username }}</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="Create Invoice">
+</form>
+
+<hr>
+
+<h3>Invoices:</h3>
+<ul>
+    <!-- {% for invoice in invoices %}
+    <li>Invoice ID: {{ invoice.id }} - Date: {{ invoice.date }}</li>
+    {% endfor %} -->
+
+        {% for book in books %}
+    <li> {{ book.title }} - price: {{ book.price }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
+
+
+
