@@ -16,8 +16,10 @@ urlpatterns = [
     path('deleteBook/<str:pk>', views.deleteBook,name='deleteBook'),
     path('updateBook/<str:pk>', views.updateBook,name='updateBook'),
     path('removeBookFromCart/<str:book_id>', views.removeBookFromCart,name='removeBookCustomer'),
-    path('payment/<int:cart_id>/', views.payment, name='payment'),
+    path('payment/', views.payment, name='payment'),
     path('empty_cart_page/', views.empty_cart_page, name='empty_cart_page'),
     path('empty_cart/', views.empty_cart, name='empty_cart'),
+    path('invoice/<int:payment_id>/', views.invoice, name='invoice'),
+    path('invoice_detail/<int:invoice_id>/', views.invoice_detail, name='invoice_detail'),
 
 ]

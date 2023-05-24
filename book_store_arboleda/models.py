@@ -48,9 +48,6 @@ class Cart(models.Model):
         self.books.clear()
         self.book_count = 0
         self.save()
-            
-    def __str__(self):
-        return str(self.user)
     
     def update_total_amount(self):
         total = 0
@@ -58,7 +55,10 @@ class Cart(models.Model):
             total += book.price
         self.total_amount = total
         self.save()
-        
+
+    def __str__(self):
+        book_names = ', '.join([str(book) for book in self.books.all()])
+        return f"Books: {book_names}"
 
 
 def update_book_count(sender, instance, action, **kwargs):
@@ -73,12 +73,12 @@ class Payment(models.Model):
     date = models.DateField()
     payment_method = models.CharField(max_length=50)
     
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        cart = Cart.objects.get(user=self.user)
-        if cart.book_count > 0:
-            cart.empty_cart()
-            cart.update_total_amount()
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     cart = Cart.objects.get(user=self.user)
+    #     if cart.book_count > 0:
+    #         cart.empty_cart()
+    #         cart.update_total_amount()
 
 class Invoice(models.Model):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
@@ -89,6 +89,10 @@ class Invoice(models.Model):
 
 
 class Invoice_detail(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    Book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE) 
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f"Invoice detail {self.invoice.id}"
+
 
