@@ -10,12 +10,14 @@
 <div class="container">
     <div class="jumbotron">
         <div class="title">
-            <h2>Payment ------</h2>
+            <h2>Payment</h2>
         </div>
         <form method="POST" action="">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit Payment</button>
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="button">Submit Payment</button>
         </form>
     </div>
 </div>

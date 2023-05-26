@@ -14,9 +14,20 @@ def home(request):
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
     context={'books':books, 'cart':cart}
+    print(context)
  
     return render(request,'book_store_arboleda/home.html',context)
     
+
+def increase_book_stock(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.add_to_stock(1)  # Increase stock by 1
+    return redirect('home')
+
+def decrease_book_stock(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.decrease_stock(1)  # Decrease stock by 1
+    return redirect('home')
 
 def logoutPage(request):
     logout(request)
@@ -206,6 +217,9 @@ def invoice(request, payment_id):
             return redirect('invoice_detail', invoice_id=invoice.id)
     else:
         form = InvoiceForm()
+        
+    total_amount = cart.total_amount if cart else 0  # Get the total_amount from Cart
+
     
     context = {
         'payment': payment,
@@ -214,6 +228,7 @@ def invoice(request, payment_id):
         'invoices': invoices,
         'form': form,
         'books': books,
+        'total_amount':total_amount,
     }
 
     # Print books and book_count
@@ -262,3 +277,20 @@ def viewcart(request):
         context = {'cart': cart, 'cart_id': cart_id}
         print(context,)
         return render(request, 'book_store_arboleda/viewcart.html', context)
+    
+
+
+def sell_book(request, book_id):
+    # Retrieve the book instance
+    book = get_object_or_404(Book, pk=book_id)
+
+    # Sell one copy of the book
+    try:
+        book.decrease_stock(1)
+    except ValueError as e:
+        # Handle the case where there are not enough copies in stock
+        return HttpResponse(str(e))
+
+    # Perform other operations related to selling the book (e.g., generating an invoice, updating user information, etc.)
+
+    return HttpResponse("Book sold successfully")

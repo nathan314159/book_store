@@ -35,7 +35,12 @@ class Book(models.Model):
             self.copies_in_stock -= num_copies
             self.save()
         else:
-            raise ValueError("Not enough copies in stock.")        
+            raise ValueError("Not enough copies in stock.")   
+        
+    def increase_stock(self, num_copies):
+        self.copies_in_stock += num_copies
+        self.total_copies += num_copies
+        self.save()     
 
  
 class Cart(models.Model): 

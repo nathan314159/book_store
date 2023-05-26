@@ -2,34 +2,58 @@
 {% load static %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/paymentInfo.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/invoice.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container">
+    <div class="center-book-img">
+        <img src="{% static 'images/The Bookstore.png' %}" alt="bookstore logo" class="book-image">
+    </div>
+    <div class="business-info">
+        <h2>Book Sotre Arboleda</h2>
+            <p>123, Elm Street</p>
+            <p>123-456-789</p>    
+            <p>mail@mail.com</p>    
+    </div>
+    <div class="invoice-payment">
+        <h1>Invoice</h1>
+        <h3>Payment ID: {{ payment_id }}</h3>
+    </div>
+    <div class="user">
+        <h3>To: {{user.first_name|capfirst}} {{user.last_name|capfirst}}</h3>
+    </div>
+    <div class="card-body">
+        <div class="books">
+            <div class="book-info">
+                <div class="book-title">Book Title</div>
+                <div class="book-price">Price</div>
+            </div>
+    
+            {% for book in books %}
 
-<h1>Invoice</h1>
-<h2>Payment ID: {{ payment_id }}</h2>
-<h3>User: {{ user.username }}</h3>
-
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-    <input type="submit" value="Create Invoice">
-</form>
-
-<hr>
-
-<h3>Invoices:</h3>
-<ul>
-    <!-- {% for invoice in invoices %}
-    <li>Invoice ID: {{ invoice.id }} - Date: {{ invoice.date }}</li>
-    {% endfor %} -->
-
-        {% for book in books %}
-    <li> {{ book.title }} - price: {{ book.price }}</li>
-    {% endfor %}
-</ul>
+                <div class="book-info">
+                    <div class="book-title">{{ book.title }}</div>
+                    <div class="book-price">${{ book.price }}</div>
+                </div>
+            {% endfor %}
+            <br>
+            <br>
+            <div class="total">
+                <div class="total-amount">Total Amount: $ {{total_amount}}</div>
+            </div>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+        
+            <input type="submit" value="Create Invoice" class="button">
+        </form>       
+    </div>
+</div>
 {% endblock %}
 
 

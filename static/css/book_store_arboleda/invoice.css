@@ -1,0 +1,110 @@
+.container {
+    padding: 10px 80px 10px 80px;
+}
+
+img {
+    width: 5px;
+    height: 5px;
+}
+
+.book-image {
+    width: 10rem;
+    height: 10rem;
+}
+
+.business-info {
+    text-align: right;
+    margin-right: 10px;
+    font-size: 16px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+p {
+    margin: 5px 0px 5px 0px;
+}
+
+.invoice-payment {
+    text-align: center;
+}
+
+.invoice-payment h1{
+    margin-bottom: 0;
+}
+
+.invoice-payment h3 {
+    margin-top: 5px;
+}
+
+.user {
+    font-size: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    margin-left: 10px;
+}
+
+.book-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    border-bottom: solid;
+    border-width: 1px;
+  }
+  
+
+.books {
+    margin: 50px 200px 30px 200px;
+}
+
+.book-title {
+    font-size: 25px;
+    word-wrap: break-word; /* Wrap the text to the next line */
+    white-space: normal; /* Allow line breaks within the text */
+    padding-right: 90px;
+}
+
+.book-price {
+    font-size: 25px;
+    padding: 20px;
+    margin: 5px;
+
+}
+
+.total-amount {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    color: red;
+}
+
+.total {
+text-align: end;
+}
+
+.button {
+    background-color: lightcoral;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    font-size: 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0.5rem;
+    margin-top: 40px;
+    cursor: pointer;
+  }
+
+.form-group {
+    font-size: 25px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.form-group input[type="checkbox"] {
+    transform: scale(2.5); /* Increase the size of the checkbox */
+    margin-left: 40px;
+  }
+
+  .form-group input[type="date"] {
+    transform: scale(1.5); /* Increase the size of the calendar input */
+    margin: 10px 110px 20px 50px;
+  }
+  

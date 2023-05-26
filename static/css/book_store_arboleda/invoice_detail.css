@@ -1,0 +1,30 @@
+.main-content {
+    margin: 20px;
+  }
+  
+  .invoice-section {
+    display: flex;
+    gap: 20px; /* Adjust the gap as needed */
+    margin: 0 auto; /* Center the invoice section horizontally */
+    max-width: 1200px; /* Set a maximum width to prevent squeezing */
+  }
+  
+  .invoice-info,
+  .invoice-order {
+    flex: 1;
+    border: solid;
+    text-align: center;
+    font-size: 20px;
+    padding: 20px; /* Add padding for spacing */
+    background-color: antiquewhite;
+  }
+  
+  .table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 30px;
+    text-align: start;
+  }
+  
