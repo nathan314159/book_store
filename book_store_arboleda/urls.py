@@ -21,5 +21,7 @@ urlpatterns = [
     path('empty_cart/', views.empty_cart, name='empty_cart'),
     path('invoice/<int:payment_id>/', views.invoice, name='invoice'),
     path('invoice_detail/<int:invoice_id>/', views.invoice_detail, name='invoice_detail'),
+    # path('sell_book/<int:book_id>/', views.sell_book, name='sell_book'),
+    # path('decrease_stock/<int:book_id>/', views.decrease_stock, name='decrease_stock'),
 
 ]

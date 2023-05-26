@@ -1,51 +1,46 @@
-<!-- invoice_detail.html -->
+{% extends "book_store_arboleda/base.html" %}
+{% load static %}
 
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/invoice_detail.css' %}">
+{% endblock %}
 {% block content %}
-<h1>Invoice Details</h1>
+<div class="main-content">
+  <h1>Invoice Details</h1>
 
-<h2>Invoice</h2>
-<p>Invoice ID: {{ invoice.id }}</p>
-<p>Date: {{ invoice.date }}</p>
-<p>User: {{ invoice.user.username }}</p>
+  <div class="invoice-section">
+    <div class="invoice-info">
+      <h2>Invoice</h2>
+      <p>Invoice ID: {{ invoice.id }}</p>
+      <p>Date: {{ invoice.date }}</p>
+      <p>User: {{ invoice.user.username }}</p>
+    </div>
 
-<h2>Books</h2>
-{% if books %}
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for book in books %}
-        <tr>
-          <td>{{ book.title }}</td>
-          <td>{{ book.price }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p>No books found.</p>
-{% endif %}
+    <div class="invoice-order">
+      <h2>Invoice Details</h2>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Book</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invoice_detail in invoice_details %}
+              <tr>
+                <td>{{ invoice_detail.book.title }}</td>
+                <td>{{ invoice_detail.book.price }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+  </div>
 
-<h2>Invoice Details</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Book</th>
-      <th>Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for invoice_detail in invoice_details %}
-      <tr>
-        <td>{{ invoice_detail.book.title }}</td>
-        <td>{{ invoice_detail.book.price }}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<a href="{% url 'home' %}">Home</a>
+  
+</div>
+
 {% endblock %}
