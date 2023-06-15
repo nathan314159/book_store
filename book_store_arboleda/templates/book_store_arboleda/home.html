@@ -1,51 +1,56 @@
 {% extends "book_store_arboleda/base.html" %}
 {% load static %}
+
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/book_store_arboleda/home1.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="card-father">
-        <ul>
-            {% for book in books %}
-            <li>
-                <div class="card">
-                    <div class="center-book-img">
-                        <img src="{% static 'images/'|add:book.title|add:'.jpg' %}" alt="{{ book.title }}" class="book-image">
-                    </div>
-
-                    <div class="card-body">
-                        <h2 class="book-title">{{ book.title }}</h2>
-                        <p class="book-author">Author: {{ book.author }}</p>
-                        <p class="book-price">Price: ${{ book.price }}</p>
-
-                        {% if book.copies_in_stock > 0 %}
-                            <p class="book-stock">In stock: {{ book.copies_in_stock }}</p>
-                            <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> Available</p>
-                        {% else %}
-                            <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> No book available with that Title</p>
-                        {% endif %}
-
-                        {% if user.is_anonymous %}
-                            <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
-                        {% elif user.is_staff %}
-                            <a href="{% url 'updateBook' pk=book.pk %}" class="button">Update</a>
-                            <a href="{% url 'deleteBook' pk=book.pk %}" class="button">Delete</a>
-                        {% else %}
-                            <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
-                        {% endif %}
-                    </div>
+<div class="card-father">
+    <ul>
+        {% for book in books %}
+        <li>
+            <div class="card">
+                <div class="center-book-img">
+                    <img src="{% static 'images/'|add:book.title|add:'.jpg' %}" alt="{{ book.title }}" class="book-image">
                 </div>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+
+                <div class="card-body">
+                    <h2 class="book-title">{{ book.title }}</h2>
+
+                    {% for author in book.authors.all %}
+                        <p>{{ author.name }}</p>
+                    {% endfor %}
+
+                    <p class="book-price">Price: ${{ book.price }}</p>
+
+                    {% if book.stock.copies_in_stock > 0 %}
+                        <p class="book-stock">In stock: {{ book.stock.copies_in_stock }}</p>
+                        <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> Available</p>
+                    {% else %}
+                        <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> No book available with that Title</p>
+                    {% endif %}
+
+                    {% if user.is_anonymous %}
+                        <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                    {% elif user.is_staff %}
+                        <a href="{% url 'updateBook' pk=book.pk %}" class="button">Update</a>
+                        <a href="{% url 'deleteBook' pk=book.pk %}" class="button">Delete</a>
+                    {% else %}
+                        <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                    {% endif %}
+
+                    </form>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}
+
+
 
 </body>
 </html>
 
-<!-- {% block scripts %}
-{{ block.super }}
-<script src="{% static 'js/book_store/book_store_arboleda/homepage.js' %}"></script>
-{% endblock %} -->
