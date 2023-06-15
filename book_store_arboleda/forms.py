@@ -7,12 +7,12 @@ from django.contrib.auth.models import User
 class Createuserform(UserCreationForm):
     class Meta:
         model=User
-        fields=['username','first_name','last_name', 'email','password1', 'password2'] 
- 
-class Createbookform(ModelForm):
+        fields=['username','password1', 'password2'] 
+        
+class CreateCustomerForm(forms.ModelForm):
     class Meta:
-        model=Book
-        fields='__all__'
+        model = Customer
+        fields = ['first_name', 'last_name', 'phone_number', 'email']
         
 class Createcartform(forms.ModelForm):
     class Meta:
@@ -36,4 +36,28 @@ class InvoiceForm(ModelForm):
         fields = ['date','status_revision']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+
+class Createbookform(ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'price']
+
+class CreateStockForm(ModelForm):
+
+    
+    class Meta:
+        model = Stock
+        fields = ['total_copies', 'copies_in_stock']
+
+        
+class CreateAuthorForm(ModelForm):
+    name = forms.CharField(required=False)
+    class Meta:
+
+        model=Author
+        fields=['name']
+        labels = {
+            'name': 'Author name'
         }

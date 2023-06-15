@@ -22,7 +22,9 @@
 
         <form method="POST" action="" >
             {% csrf_token %}
-            {{form.as_p}}
+            {{book_form.as_p}}
+            {{stock_form.as_p}}
+            {{ author_form.as_p }}
             <div class="center-button">
                 <input class="button" type="submit" value="Add book">
             </div>

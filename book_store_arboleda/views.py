@@ -11,10 +11,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 def home(request):
     books=Book.objects.all()
     cart = None
+    stock = None
     if request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
-    context={'books':books, 'cart':cart}
-    print(context)
+    context={'books':books, 'cart':cart, 'stock':stock}
+    
+        # Fetching authors and stock
+    authors = Author.objects.all()
+    stock = Stock.objects.first()
+    context['authors'] = authors
+    context['stock'] = stock
  
     return render(request,'book_store_arboleda/home.html',context)
     
@@ -77,16 +83,40 @@ def registerPage(request):
 
 
 def addbook(request):
-    form=Createbookform()
-    if request.method=='POST':
-        form=Createbookform(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect('/')
- 
-    context={'form':form}
-    return render(request,'book_store_arboleda/addbook.html',context)
+    book_form = Createbookform()
+    stock_form = CreateStockForm()
+    author_form = CreateAuthorForm()
+    if request.method == 'POST':
+        author_form = CreateAuthorForm(request.POST)
+        book_form = Createbookform(request.POST)
+        stock_form = CreateStockForm(request.POST)
+        if book_form.is_valid() and stock_form.is_valid() and author_form.is_valid():
+            book = book_form.save()  # Save the book instance
+            stock = stock_form.save(commit=False)  # Save the stock instance without committing to the database yet
+            num_books = 0  # start at 0
+            
+            stock.total_copies += num_books  # Increment the total_copies by the number of books
+            stock.copies_in_stock += num_books  # Increment the copies_in_stock by the number of books
+            stock.save()  # Now save the stock instance to the database
+            
+            book.stock = stock  # Associate the stock with the book
+            book.save()  # Save the book instance with the updated stock information
+            authors = author_form.save()
+            book.authors.add(authors)
+            return redirect('/')
+    else:
+        print("Form errors:", book_form.errors, stock_form.errors)
 
+    context = {
+        'book_form': book_form,
+        'stock_form': stock_form,
+        'author_form': author_form
+    }
+
+    return render(request, 'book_store_arboleda/addbook.html', context)
+
+
+ 
 
 
 @login_required
@@ -109,6 +139,8 @@ def removeBookFromCart(request, book_id):
     book = Book.objects.get(id=book_id)
     
     cart.books.remove(book)
+    cart.book_count = cart.books.count()  # Update the book count
+    cart.save()
     if cart.book_count > 0:
         cart.book_count -= 1
         cart.save()
@@ -125,14 +157,41 @@ def removeBookUser(request, pk):
     return redirect('viewcart')
 
 
-def updateBook(request, pk):  
+def updateBook(request, pk):
     book = get_object_or_404(Book, pk=pk)
-    form = Createbookform(request.POST or None, instance=book)
-    if form.is_valid():
-        book = form.save() # save the form instance to the book object
-        book.save() # save the book object to the database
-        return redirect('/', id=pk)
-    return render(request, 'book_store_arboleda/updateBook.html', {'form': form})
+    
+    createbook_form = Createbookform(instance=book)
+    stock_form = CreateStockForm(instance=book.stock)
+    author_form = CreateAuthorForm(instance=book.authors.first())  # Use Author model instance
+    
+    if request.method == 'POST':
+        createbook_form = Createbookform(request.POST or None, instance=book)
+        stock_form = CreateStockForm(request.POST, instance=book.stock)
+        author_form = CreateAuthorForm(request.POST, instance=book.authors.first())  # Use Author model instance
+        
+        if createbook_form.is_valid() and stock_form.is_valid() and author_form.is_valid():
+            book = createbook_form.save()  
+            
+            stock = stock_form.save(commit=False)
+            stock.book = book
+            stock.save()
+            
+            author = author_form.save()
+            book.authors.clear()  # Clear existing authors
+            book.authors.add(author)
+            
+            return redirect('/')
+    
+    context = {
+        'createbook_form': createbook_form,
+        'stock_form': stock_form,
+        'author_form': author_form,
+    }
+    return render(request, 'book_store_arboleda/updateBook.html', context)
+
+
+
+
 
 def book_list(request):
     books = Book.objects.all()
@@ -147,8 +206,6 @@ def empty_cart(request):
 def empty_cart_page(request):
     return render(request, 'book_store_arboleda/emptycart.html')
 
-
-from book_store_arboleda.models import Cart
 
 @login_required
 def payment(request):
