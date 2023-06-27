@@ -17,7 +17,15 @@ class Book(models.Model):
         author_names = ", ".join(author.name for author in self.authors.all())
         return f'{self.title} (Authors: {author_names})'
 
-   
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"   
 
  
 class Cart(models.Model): 
@@ -39,12 +47,16 @@ class Cart(models.Model):
         self.save()
         
     def save(self, *args, **kwargs):
-        self.book_count = self.books.count()  # Update the book count
-        super().save(*args, **kwargs)
+            if not self.id:
+                super().save(*args, **kwargs)
+
+            total = 0
+            for book in self.books.all():
+                total += book.price
+            self.total_amount = total
+            self.book_count = self.books.count()
+            super().save(*args, **kwargs)
     
-    def __str__(self):
-        book_names = ', '.join([str(book) for book in self.books.all()])
-        return f"Books: {book_names}"
 
 
 def update_book_count(sender, instance, action, **kwargs):
@@ -55,22 +67,24 @@ m2m_changed.connect(update_book_count, sender=Cart.books.through)
 
    
 class Payment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
     payment_method = models.CharField(max_length=50)
 
+    def __str__(self):
+        return f'{self.payment_method}'
 
 class Invoice(models.Model):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
-    status_revision = models.BooleanField(default=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
     
 
 
 class Invoice_detail(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE) 
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=True)
+    amount = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Invoice detail {self.invoice.id}"
@@ -100,12 +114,13 @@ class Stock(models.Model):
         self.total_copies += num_copies
         self.save()
         
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
 
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+class Inventory(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+
+
+class Inventory_detail(models.Model):
+    inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)

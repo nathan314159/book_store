@@ -28,7 +28,7 @@
 
             {% if cart %}
 
-                <h3>Shopping Cart: {{user.first_name|capfirst}} {{user.last_name|capfirst}}</h3>
+                <h3>Shopping Cart: {{user.username|capfirst}}</h3>
                 <div class="card card-body">
                     <table class="table table-sm">
                         <tr>
@@ -47,7 +47,12 @@
                             <td>
                                 <div class="book-info">
                                     <div class="book-title">Book title: {{ book.title }}</div>
-                                    <div class="book-author">Author: {{ book.author }}</div>
+                                    <div class="book-authors">
+                                        Authors:
+                                        {% for author in book.authors.all %}
+                                            {{ author.name }}
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </td>
                             <td><div class="book-price">${{ book.price }}</div></td>

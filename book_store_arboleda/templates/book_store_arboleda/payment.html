@@ -15,7 +15,8 @@
         <form method="POST" action="">
             {% csrf_token %}
             <div class="form-group">
-                {{ form.as_p }}
+                {{customer_form.as_p}}
+                {{ payment_form.as_p }}
             </div>
             <button type="submit" class="button">Submit Payment</button>
         </form>

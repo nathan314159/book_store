@@ -19,9 +19,11 @@ urlpatterns = [
     path('payment/', views.payment, name='payment'),
     path('empty_cart_page/', views.empty_cart_page, name='empty_cart_page'),
     path('empty_cart/', views.empty_cart, name='empty_cart'),
-    path('invoice/<int:payment_id>/', views.invoice, name='invoice'),
-    path('invoice_detail/<int:invoice_id>/', views.invoice_detail, name='invoice_detail'),
-    # path('sell_book/<int:book_id>/', views.sell_book, name='sell_book'),
-    # path('decrease_stock/<int:book_id>/', views.decrease_stock, name='decrease_stock'),
+    path('invoice/<int:payment_id>/<int:customer_id>/', views.invoice, name='invoice'),
+    path('invoice/<int:invoice_id>/book/<int:book_id>/', views.invoice_detail, name='invoice_detail'),
+    path('inventory/<int:customer_id>', views.inventory, name='inventory'),
+    path('inventory/<int:invoice_id>/book/<int:book_id>/', views.inventory_detail, name='inventory_detail'),
+
+
 
 ]

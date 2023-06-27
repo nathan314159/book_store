@@ -13,6 +13,25 @@ class CreateCustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['first_name', 'last_name', 'phone_number', 'email']
+
+    def save(self, commit=True):
+        email = self.cleaned_data.get('email')
+        try:
+            customer = Customer.objects.get(email=email)
+        except Customer.DoesNotExist:
+            customer = None
+
+        if customer:
+            # If customer with the email already exists, update the existing customer
+            customer.first_name = self.cleaned_data.get('first_name')
+            customer.last_name = self.cleaned_data.get('last_name')
+            customer.phone_number = self.cleaned_data.get('phone_number')
+            if commit:
+                customer.save()
+            return customer
+        else:
+            # If customer with the email doesn't exist, create a new customer
+            return super().save(commit=commit)
         
 class Createcartform(forms.ModelForm):
     class Meta:
@@ -23,20 +42,17 @@ class Createcartform(forms.ModelForm):
     
 
 class PaymentForm(ModelForm):
+    
     class Meta:
         model = Payment
-        fields = ['date', 'payment_method']
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-        }
+        fields = ['payment_method']
+
         
-class InvoiceForm(ModelForm):
-    class Meta:
-        model = Invoice
-        fields = ['date','status_revision']
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-        }
+# class InvoiceForm(ModelForm):
+#     class Meta:
+#         model = Invoice
+#         fields = ['status_revision']
+
         
 
 class Createbookform(ModelForm):

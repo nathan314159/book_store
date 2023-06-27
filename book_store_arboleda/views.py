@@ -121,8 +121,15 @@ def addbook(request):
 
 @login_required
 def addtocart(request, pk):
-    book = Book.objects.get(id=pk)
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    book = get_object_or_404(Book, id=pk)
+    user_id = request.user.id
+    cart = Cart.objects.filter(user_id=user_id).first()  # Get the cart for the user
+    
+    if not cart:
+        cart = Cart(user_id=user_id)
+
+        cart.save()  # Save the newly created cart
+    
     cart.books.add(book)
     messages.success(request, 'The book has been added successfully to the cart!')
     return redirect('viewcart')
@@ -209,46 +216,84 @@ def empty_cart_page(request):
 
 @login_required
 def payment(request):
-    user = request.user
-
-    try:
-        cart = Cart.objects.get(user=user)
-    except Cart.DoesNotExist:
-        return HttpResponse("Cart not found.")
-
+    customer_form = CreateCustomerForm()
     if request.method == 'POST':
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            payment = form.save(commit=False)
-            payment.user = user
-            payment.save()
-            context = {
-                'date': payment.date,
-                'payment_method': payment.payment_method,
-                'cart': cart
-            }
-            return redirect('invoice', payment_id=payment.id)
-    else:
-        form = PaymentForm()
+        payment_form = PaymentForm(request.POST)
+        customer_form = CreateCustomerForm(request.POST)
+        if payment_form.is_valid() and customer_form.is_valid():
+            payment = payment_form.save(commit=False)
+            try:
+                existing_customer = Customer.objects.get(user=request.user)
+                # Update the existing customer fields
+                existing_customer.first_name = customer_form.cleaned_data['first_name']
+                existing_customer.last_name = customer_form.cleaned_data['last_name']
+                existing_customer.phone_number = customer_form.cleaned_data['phone_number']
+                existing_customer.email = customer_form.cleaned_data['email']
+                existing_customer.save()
+                customer = existing_customer
+            except Customer.DoesNotExist:
+                # Create a new customer
+                customer = customer_form.save(commit=False)
+                customer.user = request.user
+                customer.save()
 
-    print("Cart:", cart)
-    print("Books in Cart:")
-    for book in cart.books.all():
-        print(book)
+            payment.customer = customer
+            payment.save()
+            
+            # Pass customer information to the inventory function
+            inventory(request, customer.id)
+            
+            return redirect('invoice', payment_id=payment.id, customer_id=customer.id)
+    else:
+        payment_form = PaymentForm()
+        try:
+            existing_customer = Customer.objects.get(user=request.user)
+            # Customer exists, pre-fill the form with the existing data
+            initial_data = {
+                'first_name': existing_customer.first_name,
+                'last_name': existing_customer.last_name,
+                'phone_number': existing_customer.phone_number,
+                'email': existing_customer.email,
+            }
+            customer_form = CreateCustomerForm(initial=initial_data)
+        except Customer.DoesNotExist:
+            # Customer does not exist, continue with an empty form
+            pass
 
     context = {
-        'form': form,
-        'cart': cart
+        'payment_form': payment_form,
+        'customer_form': customer_form
     }
     return render(request, 'book_store_arboleda/payment.html', context)
 
-
-
-
-def invoice(request, payment_id):
-    payment = Payment.objects.get(id=payment_id)
+def invoice_detail(request, invoice_id, book_id):
+    invoice = get_object_or_404(Invoice, id=invoice_id)
+    invoice_details = Invoice_detail.objects.filter(invoice=invoice)
+    books = [invoice_detail.book for invoice_detail in invoice_details]
+    book = Book.objects.get(id=book_id)
+    
     user = request.user
-    invoices = Invoice.objects.filter(payment=payment)
+    cart = Cart.objects.get(user=user)
+    
+    
+
+    context = {
+        'invoice': invoice,
+        'books': books,
+        'book': book,
+        'cart': cart,
+    }
+    print('--- book id: ', book_id)
+    print('--- invoice id: ', invoice)
+    return render(request, 'book_store_arboleda/invoice_detail.html', context)
+
+
+def invoice(request, payment_id, customer_id):
+    payment = Payment.objects.get(id=payment_id)
+    customer = Customer.objects.get(id=customer_id)
+    inventory = Inventory.objects.get(id=customer_id)
+    book_id = Book.objects.get(id=customer.id).id
+    user = request.user
 
     try:
         cart = Cart.objects.get(user=user)
@@ -256,70 +301,94 @@ def invoice(request, payment_id):
         cart = None
 
     books = cart.books.all() if cart else []
+    books_copy = books  # Create a copy of the queryset
 
-    if request.method == 'POST':
-        form = InvoiceForm(request.POST)
-        if form.is_valid():
-            invoice = form.save(commit=False)
-            invoice.payment = payment
-            invoice.user = user
-            invoice.save()
-
-            for book in books:
-                invoice_detail = Invoice_detail.objects.create(invoice=invoice, book=book)
-                invoice_detail.save()
-
-            # cart.books.clear()  # Empty the cart by removing all books
-
-            return redirect('invoice_detail', invoice_id=invoice.id)
-    else:
-        form = InvoiceForm()
-        
     total_amount = cart.total_amount if cart else 0  # Get the total_amount from Cart
 
-    
+    # Save the invoice in the database
+    new_invoice = Invoice.objects.create(
+        payment=payment,
+        customer=customer,
+    )
+
+    # Create and save the invoice details
+    invoice_details = []
+    for book in books:
+        invoice_detail = Invoice_detail.objects.create(invoice=new_invoice, book=book, amount=1)
+        invoice_details.append(invoice_detail)
+
+
+
+    # Clear the cart after creating the invoice
+    cart.empty_cart()
+
     context = {
         'payment': payment,
         'user': user,
         'payment_id': payment_id,
-        'invoices': invoices,
-        'form': form,
         'books': books,
-        'total_amount':total_amount,
+        'total_amount': total_amount,
+        'customer': customer,
+        'new_invoice': new_invoice,
+        'invoice_details':invoice_details,
+
     }
-
-    # Print books and book_count
-    for book in books:
-        print(book.title)
-
-    book_count = len(books)
-    print("Book Count:", book_count)
+    
 
     return render(request, 'book_store_arboleda/invoice.html', context)
 
 
+from django.shortcuts import render
+from .models import Customer, Inventory, Inventory_detail, Book, Stock
 
-
-
-def invoice_detail(request, invoice_id):
-    invoice = Invoice.objects.get(id=invoice_id)
-    invoice_details = Invoice_detail.objects.filter(invoice=invoice)
-
-    user = request.user
-    cart = Cart.objects.get(user=user)
-    books = cart.books.all()
+def inventory(request, customer_id):
+    customer = Customer.objects.get(id=customer_id)
+    inventory = Inventory.objects.create(customer=customer)
+    
+    stock_books = Book.objects.filter(stock__isnull=False)  # Retrieve books that have a stock relationship
+    
+    inventory_detail_list = []
+    for book in stock_books:
+        stock = book.stock
+        if stock.copies_in_stock > 0:
+            inventory_detail = Inventory_detail.objects.create(inventory=inventory, book=book, amount=stock.copies_in_stock)
+            inventory_detail_list.append(inventory_detail)
     
     context = {
-        'invoice': invoice,
-        'invoice_details': invoice_details,
-        'books': books,
-        'cart': cart,  # Add the cart object to the context
+        'customer': customer,
+        'inventory': inventory,
+        'inventory_detail_list': inventory_detail_list,
     }
-    print(context)
-    cart.empty_cart()
-    return render(request, 'book_store_arboleda/invoice_detail.html', context)
+    
+    return render(request, 'book_store_arboleda/inventory.html', context)
 
 
+
+def create_customer(request):
+    if request.method == 'POST':
+        form = CreateCustomerForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            try:
+                customer = Customer.objects.get(email=email)
+            except Customer.DoesNotExist:
+                customer = None
+
+            if customer:
+                # If customer with the email already exists, update the existing customer
+                customer.first_name = form.cleaned_data.get('first_name')
+                customer.last_name = form.cleaned_data.get('last_name')
+                customer.phone_number = form.cleaned_data.get('phone_number')
+                customer.save()
+            else:
+                # If customer with the email doesn't exist, create a new customer
+                form.save()
+
+            # Redirect or return response
+    else:
+        form = CreateCustomerForm()
+
+    # Render the form in the template
 
 
 @login_required
@@ -337,17 +406,36 @@ def viewcart(request):
     
 
 
-def sell_book(request, book_id):
-    # Retrieve the book instance
-    book = get_object_or_404(Book, pk=book_id)
-
-    # Sell one copy of the book
-    try:
-        book.decrease_stock(1)
-    except ValueError as e:
-        # Handle the case where there are not enough copies in stock
-        return HttpResponse(str(e))
-
-    # Perform other operations related to selling the book (e.g., generating an invoice, updating user information, etc.)
-
-    return HttpResponse("Book sold successfully")
+def inventory_detail(request, inventory_id, book_id):
+    print("--- inventory_detail function called")
+    
+    inventory = get_object_or_404(Inventory, id=inventory_id)
+    print("--- inventory_id:", inventory_id)
+    print("--- inventory:", inventory)
+    
+    inventoryDetails = Inventory_detail.objects.filter(inventory=inventory)
+    print("--- inventoryDetails:", inventoryDetails)
+    
+    books = [inventory_details.book for inventory_details in inventoryDetails]
+    print("--- books:", books)
+    
+    book = Book.objects.get(id=book_id)
+    print("--- book_id:", book_id)
+    print("--- book:", book)
+    
+    user = request.user
+    print("--- user:", user)
+    
+    cart = Cart.objects.get(user=user)
+    print("--- cart:", cart)
+    
+    context = {
+        'inventory': inventory,
+        'books': books,
+        'book': book,
+        'cart': cart,
+    }
+    
+    print("--- context:", context)
+    
+    return render(request, 'book_store_arboleda/invoice_detail.html', context)
