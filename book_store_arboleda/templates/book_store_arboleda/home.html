@@ -28,7 +28,8 @@
                         <p class="book-stock">In stock: {{ book.stock.copies_in_stock }}</p>
                         <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> Available</p>
                     {% else %}
-                        <p class="availability"><i class="fa-regular fa-circle-check fa-lg"></i> No book available with that Title</p>
+                        <p class="availability"><i class="fa-solid fa-circle-xmark"></i> We are sorry the book is not in stock in this moment</p>
+
                     {% endif %}
 
                     {% if user.is_anonymous %}
@@ -37,7 +38,11 @@
                         <a href="{% url 'updateBook' pk=book.pk %}" class="button">Update</a>
                         <a href="{% url 'deleteBook' pk=book.pk %}" class="button">Delete</a>
                     {% else %}
-                        <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                        {% if book.stock.copies_in_stock > 0 %}
+                            <a href="{% url 'addtocart' pk=book.pk %}" class="button">Add to cart</a>
+                        {% else %}
+                            <button class="button" disabled>Add to cart</button>
+                        {% endif %}
                     {% endif %}
 
                     </form>

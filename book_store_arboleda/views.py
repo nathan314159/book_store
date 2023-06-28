@@ -240,8 +240,11 @@ def payment(request):
             payment.customer = customer
             payment.save()
             
+            # Hacer la operacion para el stock ej 50-1  para cada libro
+            #
             # Pass customer information to the inventory function
             inventory(request, customer.id)
+                                                                        
             
             return redirect('invoice', payment_id=payment.id, customer_id=customer.id)
     else:
@@ -291,8 +294,6 @@ def invoice_detail(request, invoice_id, book_id):
 def invoice(request, payment_id, customer_id):
     payment = Payment.objects.get(id=payment_id)
     customer = Customer.objects.get(id=customer_id)
-    inventory = Inventory.objects.get(id=customer_id)
-    book_id = Book.objects.get(id=customer.id).id
     user = request.user
 
     try:
@@ -301,7 +302,7 @@ def invoice(request, payment_id, customer_id):
         cart = None
 
     books = cart.books.all() if cart else []
-    books_copy = books  # Create a copy of the queryset
+
 
     total_amount = cart.total_amount if cart else 0  # Get the total_amount from Cart
 
@@ -311,14 +312,14 @@ def invoice(request, payment_id, customer_id):
         customer=customer,
     )
 
-    # Create and save the invoice details
+    # Create and save the invoice details <------- Inventory
     invoice_details = []
     for book in books:
         invoice_detail = Invoice_detail.objects.create(invoice=new_invoice, book=book, amount=1)
+        Stock.objects.get(id = book.id).decrease_stock(1)
         invoice_details.append(invoice_detail)
-
-
-
+        
+        
     # Clear the cart after creating the invoice
     cart.empty_cart()
 
@@ -329,17 +330,14 @@ def invoice(request, payment_id, customer_id):
         'books': books,
         'total_amount': total_amount,
         'customer': customer,
-        'new_invoice': new_invoice,
-        'invoice_details':invoice_details,
+  
+
 
     }
     
 
     return render(request, 'book_store_arboleda/invoice.html', context)
 
-
-from django.shortcuts import render
-from .models import Customer, Inventory, Inventory_detail, Book, Stock
 
 def inventory(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
@@ -350,9 +348,13 @@ def inventory(request, customer_id):
     inventory_detail_list = []
     for book in stock_books:
         stock = book.stock
-        if stock.copies_in_stock > 0:
-            inventory_detail = Inventory_detail.objects.create(inventory=inventory, book=book, amount=stock.copies_in_stock)
+        inventory_details = Inventory_detail.objects.filter(book=book)
+
+        for inventory_detail in inventory_details:
+            inventory_detail.amount = stock.copies_in_stock
+            inventory_detail.save()
             inventory_detail_list.append(inventory_detail)
+
     
     context = {
         'customer': customer,
