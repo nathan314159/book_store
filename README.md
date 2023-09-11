@@ -7,7 +7,7 @@ Paso 2 >> Entrar en la carpeta libreriaNathan en cmd
 
 Paso 3 >> Crear entorno virtual (ejecutar comando) -> vitualenv env
 
-Paso 4 >> Activar entorno virtual (ejecutar comando) -> env\Scripts\activate
+Paso 4 >> Activar entorno virtual (ejecutar comando) -> env\Scripts\.activate
 
 Paso 4.1 >> Para mayor informacion revisar video sobre entorno virtual django: https://www.youtube.com/watch?v=t9KNwBtE5-M&t=286s
 
